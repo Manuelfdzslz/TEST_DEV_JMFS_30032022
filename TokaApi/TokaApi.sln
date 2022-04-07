@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokaApi", "TokaApi\TokaApi.csproj", "{55798778-3D51-449D-B80B-8C0DA3EFD248}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55798778-3D51-449D-B80B-8C0DA3EFD248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55798778-3D51-449D-B80B-8C0DA3EFD248}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55798778-3D51-449D-B80B-8C0DA3EFD248}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55798778-3D51-449D-B80B-8C0DA3EFD248}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0AE31CE0-E8B0-4D89-BDCC-4CA2BAA7D4C5}
+	EndGlobalSection
+EndGlobal

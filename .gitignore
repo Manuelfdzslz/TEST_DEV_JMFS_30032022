@@ -1,0 +1,3 @@
+# ignorar la carpeta de los ensamblados
+bin
+obj
