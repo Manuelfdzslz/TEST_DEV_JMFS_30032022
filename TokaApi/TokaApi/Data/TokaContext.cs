@@ -19,7 +19,9 @@ namespace TokaApi.Data
 
         public virtual DbSet<Tb_PersonasFisica> Tb_PersonasFisicas { get; set; }
         public virtual DbSet<Tb_User> Tb_Users { get; set; }
+        public virtual DbSet<Tb_UserInfo> Tb_UserInfos { get; set; }
         public virtual DbSet<Tb_UserToken> Tb_UserTokens { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,6 +67,10 @@ namespace TokaApi.Data
                 entity.HasIndex(e => e.Email, "CK_Tb_User_Email")
                     .IsUnique();
 
+                entity.Property(e => e.Active)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(250)
@@ -78,6 +84,31 @@ namespace TokaApi.Data
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Tb_UserInfo>(entity =>
+            {
+                entity.HasKey(e => e.UserInfoID);
+
+                entity.ToTable("Tb_UserInfo");
+
+                entity.Property(e => e.FechaRegistro).HasColumnType("datetime");
+
+                entity.Property(e => e.Lastname)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Tb_UserInfos)
+                    .HasForeignKey(d => d.UserID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Tb_UserInfo_Tb_User");
             });
 
             modelBuilder.Entity<Tb_UserToken>(entity =>

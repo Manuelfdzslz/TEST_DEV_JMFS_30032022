@@ -14,12 +14,14 @@ namespace TokaApi.Services
     {
         private readonly TokaContext _context;
         private readonly IMapper _mapper;
-        
+        private readonly IUserInfoService _info;
 
-        public UserService(TokaContext context, IMapper mapper)
+
+        public UserService(TokaContext context, IMapper mapper, IUserInfoService userInfoService)
         {
             _context = context;
             _mapper = mapper;
+            _info = userInfoService;
         }
 
         public async Task<IEnumerable<User>> GetAsync()
