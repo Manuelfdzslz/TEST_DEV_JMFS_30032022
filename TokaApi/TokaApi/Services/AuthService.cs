@@ -44,6 +44,14 @@ namespace TokaApi.Services
                 User user = _mapper.Map<User>(dbUser);
 
                 string token = await _createToken(user.UserID);
+                var dbToken = new Tb_UserToken();
+                dbToken.UserID = dbUser.UserID;
+                dbToken.Activo = true;
+                dbToken.FechaRegistro = DateTime.Now;
+                dbToken.Token = token;
+                _context.Tb_UserTokens.Add(dbToken);
+                await _context.SaveChangesAsync();
+
                 user.Token = token;
                 return user;
 
