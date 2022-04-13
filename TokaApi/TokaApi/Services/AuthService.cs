@@ -81,32 +81,25 @@ namespace TokaApi.Services
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes("llaveSecretaT0k4T3st_2022");
+                var key = Encoding.ASCII.GetBytes(Settings.Current.KeySecret);
                 var infoUser = _context.Tb_UserInfos.Where(x => x.UserID == userID).FirstOrDefault();
                 string lastname = infoUser?.Lastname;
                 string firstname = infoUser?.Name;
                 string userName = firstname +" "+ lastname;
-                int tokenId = 0;
-                var tok = _context.Tb_UserTokens.LastOrDefault();
-                if (tok != null)
-                {
-                    tokenId = tok.TokenID;
-                }
-                tokenId++;
+               
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
                     new Claim(JwtRegisteredClaimNames.Sub,userName),
                     new Claim(JwtRegisteredClaimNames.Jti,userID.ToString()),
-                    new Claim("Tk",tokenId.ToString()),
                     new Claim("Fn", firstname),
                     new Claim("Ln", lastname),
                     }),
-                    Expires = DateTime.UtcNow.AddDays(10),
+                    Expires = DateTime.UtcNow.AddDays(Settings.Current.Expires),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                    Issuer = "toka.test",
-                    Audience = "toka.test",
+                    Issuer = Settings.Current.Issuer,
+                    Audience = Settings.Current.Audience,
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 return tokenHandler.WriteToken(token);

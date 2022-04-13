@@ -40,6 +40,7 @@ namespace TokaApi.Services
             if (dbUser!=null)
             {
                 user = _mapper.Map<User>(dbUser);
+                user.Token =  _context.Tb_UserTokens.Where(x=>x.UserID==user.UserID && x.Activo).FirstOrDefault()?.Token;
                 return user;
             }
             return null;

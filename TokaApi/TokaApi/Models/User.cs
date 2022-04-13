@@ -10,6 +10,7 @@ namespace TokaApi.Models
         public int UserID { get; set; }
         public string Email { get; set; }
         public string Pasword { get; set; }
+        public bool? Active { get; set; }
         public string Token { get; set; }
         public UserInfo Info { get; set; }
         public DateTime? FechaRegistro { get; set; }
