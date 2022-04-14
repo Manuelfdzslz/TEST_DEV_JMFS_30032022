@@ -27,8 +27,14 @@ namespace TokaApi.Services
         public async Task<IEnumerable<User>> GetAsync()
         {
             List<User> users = new List<User>();
-            var dbUsers = await _context.Tb_Users.ToListAsync();
-            users= dbUsers.Select(x => _mapper.Map<User>(x)).ToList();
+            var dbUsers = await _context.Tb_Users.Include("Tb_UserInfos").ToListAsync();
+            //users = dbUsers.Select(x => _mapper.Map<User>(x)).ToList();
+            foreach (var dbuser in dbUsers)
+            {
+                var user = _mapper.Map<User>(dbuser);
+                user.Info = _mapper.Map<UserInfo>(dbuser.Tb_UserInfos.First());
+                users.Add(user);
+            }
            
             return users;
         }
@@ -40,6 +46,8 @@ namespace TokaApi.Services
             if (dbUser!=null)
             {
                 user = _mapper.Map<User>(dbUser);
+                var dbInfo =  _context.Tb_UserInfos.Where(x=>x.UserID==dbUser.UserID).FirstOrDefault();
+                user.Info = _mapper.Map<UserInfo>(dbInfo);
                 user.Token =  _context.Tb_UserTokens.Where(x=>x.UserID==user.UserID && x.Activo).FirstOrDefault()?.Token;
                 return user;
             }
@@ -54,6 +62,8 @@ namespace TokaApi.Services
                 Tb_User dbUser =_mapper.Map<Tb_User>(m);
                 _context.Tb_Users.Add(dbUser);
                 await _context.SaveChangesAsync();
+                m.Info.UserID = dbUser.UserID;
+                await _info.PostAsync(m.Info);
                 return user;
 
             }

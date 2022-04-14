@@ -53,6 +53,7 @@ namespace TokaApi
             services.AddTransient<IPersonaFisca, PersonaFisicaService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserInfoService, UserInfoService>();
+            services.AddTransient<IAuthService, AuthService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

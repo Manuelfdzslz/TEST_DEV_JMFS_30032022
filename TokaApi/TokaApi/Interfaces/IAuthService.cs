@@ -8,8 +8,8 @@ namespace TokaApi.Interfaces
 {
     public interface IAuthService
     {
-        Task<User> PostLogIn(User m);
-        Task<User> PutPwdAsync(User m);
+        Task<User> PostLogIn(LogIn m);
+        Task<User> PutPwdAsync(LogIn m);
         Task<User> PutLogAutAsync(User m);
     }
 }

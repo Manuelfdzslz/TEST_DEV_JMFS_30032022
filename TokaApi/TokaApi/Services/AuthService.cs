@@ -23,16 +23,16 @@ namespace TokaApi.Services
             _context = context;
             _mapper = mapper;
         }
-        public async Task<User> PostLogIn(User m)
+        public async Task<User> PostLogIn(LogIn m)
         {
             try
             {
-                var dbUser = await _context.Tb_Users.FindAsync(m.Email);
+                var dbUser =  _context.Tb_Users.Where(x=>x.Email==m.Email).FirstOrDefault();
                 if (dbUser==null)
                 {
-                    throw new Exception("Invalid password");
+                    throw new Exception("Invalid user");
                 }
-                if (m.Pasword != dbUser.Pasword)
+                if (m.Password != dbUser.Pasword)
                 {
                     throw new Exception("Invalid password");
                 }
@@ -42,8 +42,13 @@ namespace TokaApi.Services
                     throw new Exception("User inactive");
                 }
                 User user = _mapper.Map<User>(dbUser);
-
-                string token = await _createToken(user.UserID);
+                var tokens=_context.Tb_UserTokens.Where(x=>x.UserID== dbUser.UserID);
+                foreach (var t in tokens)
+                {
+                    t.Activo = false;
+                    _context.Tb_UserTokens.Update(t);
+                }
+                string token = _createToken(user.UserID);
                 var dbToken = new Tb_UserToken();
                 dbToken.UserID = dbUser.UserID;
                 dbToken.Activo = true;
@@ -56,10 +61,10 @@ namespace TokaApi.Services
                 return user;
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                return null;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -70,13 +75,13 @@ namespace TokaApi.Services
             throw new NotImplementedException();
         }
 
-        public Task<User> PutPwdAsync(User m)
+        public Task<User> PutPwdAsync(LogIn m)
         {
             throw new NotImplementedException();
         }
 
 
-        private async Task<string> _createToken(int userID)
+        private string _createToken(int userID)
         {
             try
             {
@@ -104,10 +109,10 @@ namespace TokaApi.Services
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 return tokenHandler.WriteToken(token);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                throw new Exception(ex.Message);
             }
         }
 

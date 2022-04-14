@@ -16,6 +16,8 @@ namespace TokaApi.Utils
             CreateMap<Tb_PersonasFisica, PersonasFisica>();
             CreateMap<User, Tb_User>();
             CreateMap<Tb_User, User>();
+            CreateMap<UserInfo, Tb_UserInfo>();
+            CreateMap<Tb_UserInfo, UserInfo>();
         }
     }
 }
