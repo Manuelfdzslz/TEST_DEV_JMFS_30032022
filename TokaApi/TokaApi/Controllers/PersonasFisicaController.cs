@@ -54,13 +54,22 @@ namespace TokaApi.Controllers
             {
                 return BadRequest();
             }
+
             var PersonasFisica = await _personaFisica.GetByIDAsync(id);
 
             if (PersonasFisica == null)
             {
                 return NotFound();
             }
-
+            if (!ModelState.IsValid)
+            {
+                string errors = "";
+                foreach (var error in ModelState.Values)
+                {
+                    errors += String.Concat(",", error.Errors.Select(x => x.ErrorMessage).ToArray());
+                }
+                return Problem(errors);
+            }
             var res = await _personaFisica.PutAsync(personasFisica);
 
             return Ok();
@@ -70,7 +79,8 @@ namespace TokaApi.Controllers
         [HttpPost]
         public async Task<ActionResult<PersonasFisica>> PostPersonasFisica([FromBody]PersonasFisica personaFisica)
         {
-           PersonasFisica resp=  await _personaFisica.PostAsync(personaFisica);
+           
+            PersonasFisica resp =  await _personaFisica.PostAsync(personaFisica);
 
             return CreatedAtAction("GetPersonasFisica", new { id = resp.IdPersonaFisica }, resp);
         }
