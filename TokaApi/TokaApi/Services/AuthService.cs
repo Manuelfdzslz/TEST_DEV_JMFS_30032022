@@ -70,9 +70,29 @@ namespace TokaApi.Services
 
        
 
-        public Task<User> PutLogAutAsync(User m)
+        public async Task<User> PutLogAutAsync(User m)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = _context.Tb_Users.Where(x => x.Email == m.Email).FirstOrDefault();
+
+                var dbtoken = _context.Tb_UserTokens.Where(x => x.Activo && x.UserID == user.UserID).FirstOrDefault();
+                if (dbtoken != null)
+                {
+                    dbtoken.Activo = false;
+                    _context.Tb_UserTokens.Update(dbtoken);
+                    await _context.SaveChangesAsync();
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
+            }
+
+            return m;
+
         }
 
         public Task<User> PutPwdAsync(LogIn m)
