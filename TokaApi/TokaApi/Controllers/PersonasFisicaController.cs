@@ -5,14 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TokaApi.Attributes;
 using TokaApi.Data;
 using TokaApi.Interfaces;
 using TokaApi.Models;
 
 namespace TokaApi.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
+    [TkAuth]
     public class PersonasFisicaController : ControllerBase
     {
         private readonly TokaContext _context;

@@ -54,6 +54,9 @@ namespace TokaApi
             services.AddSingleton(mapper);
             services.AddMvc().AddFluentValidation(); ;
             services.AddTransient<IPersonaFisca, PersonaFisicaService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserInfoService, UserInfoService>();
+            services.AddTransient<IAuthService, AuthService>();
             services.AddTransient <IValidator<PersonasFisica>, PeronaFisicaValidator>();
         }
 
