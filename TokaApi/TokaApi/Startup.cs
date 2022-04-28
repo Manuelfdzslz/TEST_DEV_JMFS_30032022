@@ -1,4 +1,6 @@
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TokaApi.Data;
 using TokaApi.Interfaces;
+using TokaApi.Models;
 using TokaApi.Services;
 using TokaApi.Utils;
 
@@ -49,11 +52,12 @@ namespace TokaApi
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
-            services.AddMvc();
+            services.AddMvc().AddFluentValidation(); ;
             services.AddTransient<IPersonaFisca, PersonaFisicaService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserInfoService, UserInfoService>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient <IValidator<PersonasFisica>, PeronaFisicaValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
