@@ -52,7 +52,7 @@ namespace TokaApi
 
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
-            services.AddMvc().AddFluentValidation(); ;
+            services.AddMvc().AddFluentValidation();
             services.AddTransient<IPersonaFisca, PersonaFisicaService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserInfoService, UserInfoService>();

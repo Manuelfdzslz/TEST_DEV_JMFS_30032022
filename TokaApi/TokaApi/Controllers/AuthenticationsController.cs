@@ -22,9 +22,9 @@ namespace TokaApi.Controllers
         }
         // POST api/<AuthenticationsController>
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] User user)
+        public async Task<IActionResult> PostAsync([FromBody] LogIn m)
         {
-           var res= await _service.PostLogIn(user);
+           var res= await _service.PostLogIn(m);
 
             return Ok(res);
         }
