@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -17,12 +18,40 @@ namespace TokaApi.Services
     {
         private readonly TokaContext _context;
         private readonly IMapper _mapper;
+        private readonly IOptions<AuthenticationSettings> _authSettings;
 
-        public AuthService(TokaContext context, IMapper mapper)
+        public AuthService(TokaContext context, IMapper mapper, IOptions<AuthenticationSettings> authSettings)
         {
             _context = context;
             _mapper = mapper;
+            _authSettings = authSettings;
         }
+        public bool GetTokenAsync(string token)
+        {
+            var Claims = _getTokenClaims(token);
+
+            if (!Claims.Any())
+                throw new Exception("Invalid Token");
+
+            var expiration = Claims.FirstOrDefault(x => x.Type == "exp");
+            if (string.IsNullOrWhiteSpace(expiration.Value))
+                throw new Exception("Invalid Token");
+
+            DateTime expirationDate = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expiration.Value)).UtcDateTime;
+            if (expirationDate < DateTime.Now)
+                throw new Exception("Expired Token");
+
+            var id = Claims.FirstOrDefault(x => x.Type == "jti").Value;
+            int userId = int.Parse(id);
+            var tk = _context.Tb_UserTokens.Where(x => x.Token == token && x.Activo && x.UserID == userId);
+            if (!tk.Any())
+            {
+                throw new Exception("Invalid Token");
+            }
+
+            return true;
+        }
+
         public async Task<User> PostLogIn(LogIn m)
         {
             try
@@ -68,8 +97,6 @@ namespace TokaApi.Services
             }
         }
 
-       
-
         public async Task<User> PutLogAutAsync(User m)
         {
             try
@@ -106,7 +133,7 @@ namespace TokaApi.Services
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(Settings.Current.KeySecret);
+                var key = Encoding.ASCII.GetBytes(_authSettings.Value.KeySecret);
                 var infoUser = _context.Tb_UserInfos.Where(x => x.UserID == userID).FirstOrDefault();
                 string lastname = infoUser?.Lastname;
                 string firstname = infoUser?.Name;
@@ -121,10 +148,10 @@ namespace TokaApi.Services
                     new Claim("Fn", firstname),
                     new Claim("Ln", lastname),
                     }),
-                    Expires = DateTime.UtcNow.AddDays(Settings.Current.Expires),
+                    Expires = DateTime.UtcNow.AddDays(_authSettings.Value.Expires),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                    Issuer = Settings.Current.Issuer,
-                    Audience = Settings.Current.Audience,
+                    Issuer = _authSettings.Value.Issuer,
+                    Audience = _authSettings.Value.Audience,
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 return tokenHandler.WriteToken(token);

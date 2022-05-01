@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ namespace TokaApi.Attributes
 {
     public class TkAuth : Attribute, IAuthorizationFilter
     {
-        
+       
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             bool isValid = false;
@@ -43,7 +45,10 @@ namespace TokaApi.Attributes
                     var exp = tokenS.Claims.FirstOrDefault(x => x.Type == "exp").Value;
                     int ID = Int32.Parse(id);
 
-                    using (TokaContext db= new TokaContext())
+                    var optionsBuilder = new DbContextOptionsBuilder<TokaContext>();
+                    optionsBuilder.UseSqlServer(AppSettings.Current.Database);
+
+                    using (TokaContext db= new TokaContext(optionsBuilder.Options))
                     {
                         var user = db.Tb_Users.Where(x => x.UserID == ID && x.Active.Value).FirstOrDefault();
                         if (user!=null)

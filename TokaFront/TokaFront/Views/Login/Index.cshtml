@@ -8,12 +8,11 @@
     <div id="formContent">
         <!-- Tabs Titles -->
         <!-- Icon -->
-        <div class="fadeIn first">
-            <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
-        </div>
+        
 
         <!-- Login Form -->
         <form id="formLog" action="@Url.Action("LogIn","Login")" method="post">
+            @Html.AntiForgeryToken()
             <input type="text" id="login" class="fadeIn second" name="Email" required placeholder="login">
             <input type="text" id="password" class="fadeIn third" name="Password" required placeholder="password">
             <input type="submit" class="fadeIn fourth" value="Log In">
@@ -29,4 +28,5 @@
 @section Scripts {
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js" asp-append-version="true"></script>
     <script src="~/js/Login.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation/dist/localization/messages_es.js" asp-append-version="true"></script>
 }

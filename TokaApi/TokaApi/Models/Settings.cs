@@ -44,7 +44,7 @@ namespace TokaApi.Models
               .AddEnvironmentVariables();
             IConfigurationRoot configuration = builder.Build();
 
-            var settings = new Settings(configuration.GetSection("AppSettings"));
+            var settings = new Settings(configuration.GetSection("AuthenticationSettings"));
             return settings;
         }
     }

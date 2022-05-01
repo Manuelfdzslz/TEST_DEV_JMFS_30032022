@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,6 +27,11 @@ namespace TokaFront
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddHttpClient("Api",client=> {
+                client.BaseAddress = new Uri(AppSettings.Current.ServiceUrl); 
+            });
+            services.AddMvc().AddFluentValidation();
+            services.AddTransient<IValidator<LogIn>, LogInValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
