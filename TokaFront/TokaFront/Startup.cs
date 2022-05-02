@@ -32,6 +32,7 @@ namespace TokaFront
             });
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<LogIn>, LogInValidator>();
+            services.AddTransient<IValidator<PersonasFisica>, PeronaFisicaValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,7 +59,7 @@ namespace TokaFront
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Login}/{action=Index}/{id?}");
+                    pattern: "{controller=PersonaFisica}/{action=Index}/{id?}");
             });
         }
     }

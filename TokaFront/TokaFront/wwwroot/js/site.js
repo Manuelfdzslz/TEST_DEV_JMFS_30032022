@@ -1,4 +1,46 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function setFormValidation(id) {
+    $(id).validate({
+        highlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-success').addClass('has-danger');
+            $(element).closest('.form-check').removeClass('has-success').addClass('has-danger');
+            $(element).closest('.form-control').removeClass('is-valid').addClass('is-invalid');
+            $(element).closest('.form-group').children('.error').removeClass('valid-feedback').addClass("invalid-feedback");
+        },
+        success: function (label, element) {
+            $(label).closest('.form-group').removeClass('has-danger').addClass('has-success');
+            $(label).closest('.form-check').removeClass('has-danger').addClass('has-success');
+            $(label).closest('.form-group').children('.form-control').removeClass('is-invalid').addClass('is-valid');
 
-// Write your JavaScript code.
+            label.removeClass('invalid-feedback').addClass("valid-feedback");
+
+            //if ($(element).hasClass("select2-hidden-accessible")) {
+            //    var value = $(element).val();
+            //    if (value == null || value == '' || value == 'null') {
+            //        $(element).closest('.form-group').removeClass('has-success').addClass('has-danger');
+            //        $(element).closest('.form-check').removeClass('has-success').addClass('has-danger');
+            //        $(element).closest('.form-control').removeClass('is-valid').addClass('is-invalid');
+            //        $(element).closest('.form-group').children('.error').removeClass('valid-feedback').addClass("invalid-feedback");
+            //    }
+            //    else {
+            //        $(label).closest('.form-group').removeClass('has-danger').addClass('has-success');
+            //        $(label).closest('.form-check').removeClass('has-danger').addClass('has-success');
+            //        $(label).closest('.form-group').children('.form-control').removeClass('is-invalid').addClass('is-valid');
+            //    }
+            //}
+            //else {
+
+            //}
+        },
+        errorPlacement: function (error, element) {
+            $(error).removeClass('valid-feedback').addClass('invalid-feedback');
+            $(element).closest('.form-group').append(error).addClass('has-danger');
+        },
+    });
+}
+
+function resetFormValidations() {
+    $('.form-group').removeClass('has-success');
+    $('.form-group').removeClass('has-danger');
+    $('.form-control').removeClass('is-invalid');
+    $('.form-control').removeClass('is-valid');
+}

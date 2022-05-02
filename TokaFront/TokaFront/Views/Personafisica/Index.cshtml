@@ -7,7 +7,7 @@
 <div class="container">
     <div class=" row">
         <div class="col-md-12  text-right p-3">
-            <button type="button" class="btn btn-primary"> agregar</button>
+            <button type="button" class="btn btn-primary" onclick="crearPersona()"> agregar</button>
         </div>
     </div>
 
@@ -41,14 +41,14 @@
                                 }
                                 else
                                 {
-                                    <span> Activo </span>
+                                    <span> Inactivo </span>
 
                                 }
                             </td>
                             <td>
-                                <a href"#" title="detalle" onclick="detail('@m.IdPersonaFisica')"><span class="material-icons">visibility</span></a>
-                                <a href"#" title="editar" onclick="edit('@m.IdPersonaFisica')"><span class="material-icons">edit</span></a>
-                                <a href"#" title="eliminar" onclick="delete('@m.IdPersonaFisica')"><span class="material-icons">delete_outline</span></a>
+                                <a href"#" title="detalle" style="cursor:pointer" onclick="detail('@m.IdPersonaFisica')"><span class="material-icons">visibility</span></a>
+                                <a href"#" title="editar"  style="cursor:pointer" onclick="edit('@m.IdPersonaFisica')"><span class="material-icons">edit</span></a>
+                                <a href"#" title="eliminar"  style="cursor:pointer"  onclick="deleteRecord('@m.IdPersonaFisica')"><span class="material-icons">delete_outline</span></a>
                             </td>
                         </tr>
                     }
@@ -69,9 +69,56 @@
         </div>
 
     </div>
-
-
 </div>
+
+<div class="modal fade" id="modalCreateEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Crear Persona Fisica</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="frmPersonaFisica">
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("IdPersonaFisica")
+                    <div class="form-group">
+                        <label for="Nombre" class="col-form-label">Nombre:</label>
+                        <input type="text" class="form-control " id="Nombre" name="Nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ApellidoPaterno" class="col-form-label">Apellido Paterno:</label>
+                        <input type="text" class="form-control" id="ApellidoPaterno" name="ApellidoPaterno" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ApellidoMaterno" class="col-form-label">Apellido Materno:</label>
+                        <input type="text" class="form-control" id="ApellidoMaterno" name="ApellidoMaterno" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="RFC" class="col-form-label">RFC:</label>
+                        <input type="text" class="form-control" id="RFC" name="RFC">
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Fecha de naciemiento:</label>
+                        <input type="text" class="form-control" id="FechaNacimiento" name="FechaNacimiento" required>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" id="btnSave" class="btn btn-primary" onclick="create()">Guardar</button>
+                <button type="button" id="btnUpdate" class="btn btn-primary hide" onclick="update()">Actualizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="deleteRecord">
+    @Html.AntiForgeryToken()
+</form>
+
 @section Scripts {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js" asp-append-version="true"></script>

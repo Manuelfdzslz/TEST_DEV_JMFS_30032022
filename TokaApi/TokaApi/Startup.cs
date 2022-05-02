@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TokaApi.Attributes;
 using TokaApi.Data;
 using TokaApi.Interfaces;
 using TokaApi.Models;
@@ -94,7 +95,17 @@ namespace TokaApi
                 });
 
             services.AddSingleton(mapper);
-            services.AddMvc().AddFluentValidation();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(CustomValidationAttribute));
+            })
+            .AddFluentValidation();
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+            
             services.AddTransient<IPersonaFisca, PersonaFisicaService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IUserInfoService, UserInfoService>();
