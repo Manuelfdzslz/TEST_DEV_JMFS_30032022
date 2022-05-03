@@ -30,6 +30,11 @@ namespace TokaFront
             services.AddHttpClient("Api",client=> {
                 client.BaseAddress = new Uri(AppSettings.Current.ServiceUrl); 
             });
+
+            services.AddHttpClient("Toka", client => {
+                client.BaseAddress = new Uri("https://api.toka.com.mx/candidato/");
+            });
+
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<LogIn>, LogInValidator>();
             services.AddTransient<IValidator<PersonasFisica>, PeronaFisicaValidator>();

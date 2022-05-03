@@ -162,7 +162,7 @@ namespace TokaFront.Controllers
                 else
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                    var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(res);
+                   var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(res);
                     return Json(new { IsSuccess = false, Message = string.Join(",", errorResponse.Errors.ToArray()) });
                 }
 

@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using TokaApi.Data;
 using TokaApi.Interfaces;
 using TokaApi.Models;
+using TokaApi.Models.Exceptions;
 
 namespace TokaApi.Services
 {
@@ -151,13 +152,22 @@ namespace TokaApi.Services
 
                 if (r.ERROR < 0)
                 {
-                    throw new Exception(r.MENSAJEERROR);
+                    ApiResponse error = new ApiResponse();
+                    error.Code = "500";
+                    error.Message = r.MENSAJEERROR;
+                    error.Errors.Add(r.MENSAJEERROR);
+                    throw new HttpCustomException(500, r.MENSAJEERROR);
                 }
             }
             catch (Exception ex)
             {
 
-                throw new Exception(ex.Message);
+                ApiResponse error = new ApiResponse();
+                error.Code = "500";
+                error.Message = ex.Message;
+                error.Errors.Add(ex.Message);
+
+                throw new HttpCustomException(500, JObject.FromObject(error));
             }
 
         }

@@ -1,6 +1,14 @@
 ﻿
 $(document).ready(function () {
-    $('#personaFisicaTable').DataTable();
+    $('#personaFisicaTable').DataTable({
+        dom: 'Bfrtip',
+        pageLength: 20,
+        buttons: [],
+        order: [2, "desc"],
+        responsive: false,
+        scrollX: false,
+        searching: false
+    });
     setFormValidation('#frmPersonaFisica')
 });
 
@@ -230,6 +238,22 @@ function update() {
     });
 }
 
+
+function deleteR(Id) {
+    Swal.fire({
+        title: '¿Seguro que quiere inactivar el registro?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si'
+    }).then((result) => {
+        console.log(result)
+        if (result.value) {
+            deleteRecord(Id);
+        }
+    })
+}
 
 function deleteRecord(Id) {
 
