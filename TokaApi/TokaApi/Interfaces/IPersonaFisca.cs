@@ -10,9 +10,9 @@ namespace TokaApi.Interfaces
     {
         Task<PersonasFisica> GetByIDAsync(int id);
         Task<IEnumerable<PersonasFisica>> GetAsync();
-        Task<PersonasFisica> PostAsync(PersonasFisica m);
-        Task<PersonasFisica> PutAsync(PersonasFisica m);
-        Task DeleteAsync(int id);
+        Task<ApiResponse> PostAsync(PersonasFisica m);
+        Task<ApiResponse> PutAsync(PersonasFisica m);
+        Task<ApiResponse> DeleteAsync(int id);
 
     }
 }
