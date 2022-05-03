@@ -13,23 +13,6 @@
 
             label.removeClass('invalid-feedback').addClass("valid-feedback");
 
-            //if ($(element).hasClass("select2-hidden-accessible")) {
-            //    var value = $(element).val();
-            //    if (value == null || value == '' || value == 'null') {
-            //        $(element).closest('.form-group').removeClass('has-success').addClass('has-danger');
-            //        $(element).closest('.form-check').removeClass('has-success').addClass('has-danger');
-            //        $(element).closest('.form-control').removeClass('is-valid').addClass('is-invalid');
-            //        $(element).closest('.form-group').children('.error').removeClass('valid-feedback').addClass("invalid-feedback");
-            //    }
-            //    else {
-            //        $(label).closest('.form-group').removeClass('has-danger').addClass('has-success');
-            //        $(label).closest('.form-check').removeClass('has-danger').addClass('has-success');
-            //        $(label).closest('.form-group').children('.form-control').removeClass('is-invalid').addClass('is-valid');
-            //    }
-            //}
-            //else {
-
-            //}
         },
         errorPlacement: function (error, element) {
             $(error).removeClass('valid-feedback').addClass('invalid-feedback');

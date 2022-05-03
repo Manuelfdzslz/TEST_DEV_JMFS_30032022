@@ -14,6 +14,9 @@ $(document).ready(function () {
 
 function crearPersona() {
     cleanInputs();
+    $('#btnSave').show();
+    $('#btnUpdate').hide();
+    resetFormValidations();
     $('#modalCreateEdit').modal('show');
 }
 
@@ -141,6 +144,7 @@ function create() {
 }
 
 function edit(Id) {
+    resetFormValidations();
     $.ajax({
         type: 'Get',
         url: '/PersonaFisica/Details',

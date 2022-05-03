@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using TokaFront.Attributes;
 using TokaFront.Models;
 
 namespace TokaFront.Controllers
@@ -51,13 +53,42 @@ namespace TokaFront.Controllers
                     Expires = DateTime.Now.AddDays(7),
                     IsEssential = true
                 });
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("Index","PersonaFisica");
             }
             else
             {
                 return RedirectToAction("Index");
             }
             
+
+        }
+
+        [HttpGet]
+        [Authentication]
+        public async Task<IActionResult> LogOutAsync()
+        {
+            User r = new User();
+            r.UserID=int.Parse(GetTokenValue("UserId"));
+            var client = _httpClientFactory.CreateClient("Api");
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(GetTokenValue("Token"));
+            StringContent content = new StringContent(JsonConvert.SerializeObject(r), Encoding.UTF8, "application/json");
+            var resp = client.PutAsync($"api/Authentications/{r.UserID}", content);
+            HttpResponseMessage response = resp.Result;
+            if (response.IsSuccessStatusCode)
+            {
+                var res = await response.Content.ReadAsStringAsync();
+                r = JsonConvert.DeserializeObject<User>(res);
+                _httpContextAccessor.HttpContext.Response.Cookies.Delete("toka-token-app");
+               
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
 
         }
     }

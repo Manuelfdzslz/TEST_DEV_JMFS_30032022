@@ -62,8 +62,10 @@ namespace TokaApi.Controllers
 
         // PUT api/<AuthenticationsController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> PutAsync(int id, [FromBody] User m)
         {
+            var res = await _service.PutLogAutAsync(m);
+            return Ok(res);
         }
 
         // DELETE api/<AuthenticationsController>/5

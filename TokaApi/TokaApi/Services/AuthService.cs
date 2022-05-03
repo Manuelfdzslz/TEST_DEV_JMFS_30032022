@@ -18,13 +18,11 @@ namespace TokaApi.Services
     {
         private readonly TokaContext _context;
         private readonly IMapper _mapper;
-        private readonly IOptions<AuthenticationSettings> _authSettings;
 
         public AuthService(TokaContext context, IMapper mapper, IOptions<AuthenticationSettings> authSettings)
         {
             _context = context;
             _mapper = mapper;
-            _authSettings = authSettings;
         }
         public bool GetTokenAsync(string token)
         {
@@ -101,9 +99,8 @@ namespace TokaApi.Services
         {
             try
             {
-                var user = _context.Tb_Users.Where(x => x.Email == m.Email).FirstOrDefault();
-
-                var dbtoken = _context.Tb_UserTokens.Where(x => x.Activo && x.UserID == user.UserID).FirstOrDefault();
+               
+                var dbtoken = _context.Tb_UserTokens.Where(x => x.Activo && x.UserID == m.UserID).FirstOrDefault();
                 if (dbtoken != null)
                 {
                     dbtoken.Activo = false;
@@ -133,7 +130,7 @@ namespace TokaApi.Services
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_authSettings.Value.KeySecret);
+                var key = Encoding.ASCII.GetBytes(Settings.Current.KeySecret);
                 var infoUser = _context.Tb_UserInfos.Where(x => x.UserID == userID).FirstOrDefault();
                 string lastname = infoUser?.Lastname;
                 string firstname = infoUser?.Name;
@@ -148,10 +145,10 @@ namespace TokaApi.Services
                     new Claim("Fn", firstname),
                     new Claim("Ln", lastname),
                     }),
-                    Expires = DateTime.UtcNow.AddDays(_authSettings.Value.Expires),
+                    Expires = DateTime.UtcNow.AddDays(Settings.Current.Expires),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                    Issuer = _authSettings.Value.Issuer,
-                    Audience = _authSettings.Value.Audience,
+                    Issuer = Settings.Current.Issuer,
+                    Audience = Settings.Current.Audience,
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 return tokenHandler.WriteToken(token);

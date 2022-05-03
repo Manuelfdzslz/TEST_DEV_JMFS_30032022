@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 
 namespace TokaFront.Models
 {
-    public class ErrorResponse
+    public class ApiResponse
     {
+        public bool IsSuccess { get; set; }
         public string Code { get; set; }
         public string Message { get; set; }
         public List<string> Errors { get; set; }
 
-        public ErrorResponse()
+        public ApiResponse()
         {
             Errors = new List<string>();
         }

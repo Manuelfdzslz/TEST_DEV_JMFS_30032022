@@ -9,10 +9,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using TokaFront.Attributes;
 using TokaFront.Models;
 
 namespace TokaFront.Controllers
 {
+    [Authentication]
     public class PersonafisicaController : ParentController
     {
         protected readonly IHttpClientFactory _httpClientFactory;
@@ -84,13 +86,13 @@ namespace TokaFront.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                    r = JsonConvert.DeserializeObject<PersonasFisica>(res);
-                    return Json(new { IsSuccess = true, Message = "Registro guardado con exito" });
+                    var apiRes = JsonConvert.DeserializeObject<ApiResponse>(res);
+                    return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
                 }
                 else
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                   var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(res);
+                   var errorResponse = JsonConvert.DeserializeObject<ApiResponse>(res);
                     return Json(new { IsSuccess = false, Message =string.Join(",", errorResponse.Errors.ToArray()) });
                 }
                 
@@ -121,13 +123,13 @@ namespace TokaFront.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                    r = JsonConvert.DeserializeObject<PersonasFisica>(res);
-                    return Json(new { IsSuccess = true, Message = "Registro actualizado con exito" });
+                    var apiRes = JsonConvert.DeserializeObject<ApiResponse>(res);
+                    return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
                 }
                 else
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                    var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(res);
+                    var errorResponse = JsonConvert.DeserializeObject<ApiResponse>(res);
                     return Json(new { IsSuccess = false, Message = string.Join(",", errorResponse.Errors.ToArray()) });
                 }
 
@@ -157,12 +159,13 @@ namespace TokaFront.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                    return Json(new { IsSuccess = true, Message = "Registro actualizado con exito" });
+                    var apiRes = JsonConvert.DeserializeObject<ApiResponse>(res);
+                    return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
                 }
                 else
                 {
                     var res = await response.Content.ReadAsStringAsync();
-                   var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(res);
+                   var errorResponse = JsonConvert.DeserializeObject<ApiResponse>(res);
                     return Json(new { IsSuccess = false, Message = string.Join(",", errorResponse.Errors.ToArray()) });
                 }
 
