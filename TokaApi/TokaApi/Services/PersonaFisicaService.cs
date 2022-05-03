@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using TokaApi.Data;
 using TokaApi.Interfaces;
 using TokaApi.Models;
+using TokaApi.Models.Exceptions;
 
 namespace TokaApi.Services
 {
@@ -65,9 +66,9 @@ namespace TokaApi.Services
         }
 
 
-        public async Task<PersonasFisica> PostAsync(PersonasFisica m)
+        public async Task<ApiResponse> PostAsync(PersonasFisica m)
         {
-
+            ApiResponse response = new ApiResponse();
             try
             {
                 
@@ -78,23 +79,35 @@ namespace TokaApi.Services
                    , m.FechaNacimiento
                    , m.UsuarioAgrega);
 
+                response.IsSuccess = true;
+                response.Code = "200";
+                response.Message = r.MENSAJEERROR;
+                response.Errors.Add(r.MENSAJEERROR);
+
                 if (r.ERROR<0)
                 {
-                    throw new Exception(r.MENSAJEERROR);
+                    response.IsSuccess = false;
+                    response.Code = "500";
+                    response.Message = r.MENSAJEERROR;
+                    response.Errors.Add(r.MENSAJEERROR);
+                    
                 }
                 m.IdPersonaFisica = r.ERROR;
             }
             catch (Exception ex)
             {
 
-                throw new Exception(ex.Message);
+                response.IsSuccess = false;
+                response.Code = "500";
+                response.Message = ex.Message;
+                response.Errors.Add(ex.Message);
             }
-            return m;
+            return response;
         }
 
-        public async Task<PersonasFisica> PutAsync(PersonasFisica m)
+        public async Task<ApiResponse> PutAsync(PersonasFisica m)
         {
-            PersonasFisica res = new PersonasFisica();
+            ApiResponse response = new ApiResponse();
             try
             {
                 SqlConnection sqlConnection1 = new SqlConnection(_config.GetConnectionString("Database"));
@@ -117,7 +130,6 @@ namespace TokaApi.Services
                 reader = await cmd.ExecuteReaderAsync();
                 int error = 0;
                 string mensaje = "";
-                // Data is accessible through the DataReader object here.
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -130,35 +142,61 @@ namespace TokaApi.Services
                 reader.Close();
                 sqlConnection1.Close();
 
+                response.IsSuccess = true;
+                response.Code = "200";
+                response.Message = mensaje;
+                response.Errors.Add(mensaje);
+
                 if (error < 0)
                 {
-                    throw new Exception(mensaje);
+                    response.IsSuccess = false;
+                    response.Code = "500";
+                    response.Message = mensaje;
+                    response.Errors.Add(mensaje);
                 }
+              
             }
             catch (Exception ex)
             {
 
-                throw new Exception(ex.Message);
+                response.IsSuccess = false;
+                response.Code = "500";
+                response.Message = ex.Message;
+                response.Errors.Add(ex.Message);
             }
-            return res;
+            return response;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<ApiResponse> DeleteAsync(int id)
         {
+            ApiResponse error = new ApiResponse();
             try
             {
                 SP_AgregarPersonaFisica r = await _context.DeletePersonaFisicaAsync(id);
 
+                error.IsSuccess = true;
+                error.Code = "200";
+                error.Message = r.MENSAJEERROR;
+                error.Errors.Add(r.MENSAJEERROR);
+                
                 if (r.ERROR < 0)
                 {
-                    throw new Exception(r.MENSAJEERROR);
+                    error.IsSuccess = false;
+                    error.Code = "500";
+                    error.Message = r.MENSAJEERROR;
+                    error.Errors.Add(r.MENSAJEERROR);
                 }
+              
             }
             catch (Exception ex)
             {
 
-                throw new Exception(ex.Message);
+                error.Code = "500";
+                error.Message = ex.Message;
+                error.Errors.Add(ex.Message);
+
             }
+            return error;
 
         }
     }

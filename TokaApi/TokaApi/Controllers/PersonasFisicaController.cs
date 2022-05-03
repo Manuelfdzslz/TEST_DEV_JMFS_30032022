@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TokaApi.Attributes;
 using TokaApi.Data;
 using TokaApi.Interfaces;
 using TokaApi.Models;
 
 namespace TokaApi.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
+    [TkAuth]
     public class PersonasFisicaController : ControllerBase
     {
         private readonly TokaContext _context;
@@ -36,6 +40,7 @@ namespace TokaApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PersonasFisica>> GetPersonasFisica(int id)
         {
+
             var PersonasFisica = await _personaFisica.GetByIDAsync(id);
 
             if (PersonasFisica == null)
@@ -48,46 +53,65 @@ namespace TokaApi.Controllers
 
         // PUT: api/PersonasFisica/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPersonasFisica(int id, PersonasFisica personasFisica)
+        public async Task<ActionResult<ApiResponse>> PutPersonasFisica(int id, PersonasFisica personasFisica)
         {
-            if (id != personasFisica.IdPersonaFisica)
+            try
             {
-                return BadRequest();
-            }
-
-            var PersonasFisica = await _personaFisica.GetByIDAsync(id);
-
-            if (PersonasFisica == null)
-            {
-                return NotFound();
-            }
-            if (!ModelState.IsValid)
-            {
-                string errors = "";
-                foreach (var error in ModelState.Values)
+                if (id != personasFisica.IdPersonaFisica)
                 {
-                    errors += String.Concat(",", error.Errors.Select(x => x.ErrorMessage).ToArray());
+                    return BadRequest();
                 }
-                return Problem(errors);
-            }
-            var res = await _personaFisica.PutAsync(personasFisica);
 
-            return Ok();
+                var PersonasFisica = await _personaFisica.GetByIDAsync(id);
+
+                if (PersonasFisica == null)
+                {
+                    return NotFound();
+                }
+                if (!ModelState.IsValid)
+                {
+                    string errors = "";
+                    foreach (var error in ModelState.Values)
+                    {
+                        errors += String.Concat(",", error.Errors.Select(x => x.ErrorMessage).ToArray());
+                    }
+                    return Problem(errors);
+                }
+                var res = await _personaFisica.PutAsync(personasFisica);
+
+                return Ok(res);
+
+            }
+            catch (Exception ex)
+            {
+                ApiResponse r = new ApiResponse();
+                r.Code = "500";
+                r.Message = ex.Message;
+                r.Errors.Add(ex.Message);
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string jsonString = JsonSerializer.Serialize(r, options);
+                return Problem(jsonString);
+            }
+            
         }
 
         // POST: api/PersonasFisica
         [HttpPost]
-        public async Task<ActionResult<PersonasFisica>> PostPersonasFisica([FromBody]PersonasFisica personaFisica)
+        public async Task<ActionResult<ApiResponse>> PostPersonasFisica([FromBody]PersonasFisica personaFisica)
         {
-           
-            PersonasFisica resp =  await _personaFisica.PostAsync(personaFisica);
 
-            return CreatedAtAction("GetPersonasFisica", new { id = resp.IdPersonaFisica }, resp);
+                ApiResponse resp = await _personaFisica.PostAsync(personaFisica);
+
+                return Ok(resp);
+            
+            
+           
+           
         }
 
         // DELETE: api/PersonasFisica/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePersonasFisica(int id)
+        public async Task<ActionResult<ApiResponse>> DeletePersonasFisica(int id)
         {
             var Per = await _personaFisica.GetByIDAsync(id);
             if (Per == null)
@@ -95,9 +119,9 @@ namespace TokaApi.Controllers
                 return NotFound();
             }
 
-            await _personaFisica.DeleteAsync(id);
+            var r= await _personaFisica.DeleteAsync(id);
 
-            return Ok();
+            return Ok(r);
         }
 
         
