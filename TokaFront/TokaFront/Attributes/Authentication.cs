@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using TokaFront.Interfaces;
 using TokaFront.Models;
 
 namespace TokaFront.Attributes
@@ -24,7 +25,6 @@ namespace TokaFront.Attributes
         {
             client = new HttpClient();
             client.BaseAddress = new Uri(AppSettings.Current.ServiceUrl);
-            
 
         }
 

@@ -10,7 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TokaFront.Attributes;
+using TokaFront.Interfaces;
 using TokaFront.Models;
+using TokaFront.Rest;
 
 namespace TokaFront
 {
@@ -26,15 +29,12 @@ namespace TokaFront
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-            services.AddHttpClient("Api",client=> {
-                client.BaseAddress = new Uri(AppSettings.Current.ServiceUrl); 
-            });
 
             services.AddHttpClient("Toka", client => {
                 client.BaseAddress = new Uri("https://api.toka.com.mx/candidato/");
             });
 
+            services.AddHttpClient<IRestConector, RestConector>();
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<LogIn>, LogInValidator>();
             services.AddTransient<IValidator<PersonasFisica>, PeronaFisicaValidator>();
