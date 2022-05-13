@@ -15,7 +15,8 @@ using TokaFront.Models;
 
 namespace TokaFront.Controllers
 {
-    [Authentication]
+    //[Authentication]
+    [ServiceFilter(typeof(Authentication))]
     public class PersonafisicaController : ParentController
     {
         protected readonly IRestConector _restConector;

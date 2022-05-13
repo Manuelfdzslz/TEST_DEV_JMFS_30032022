@@ -34,6 +34,7 @@ namespace TokaFront
                 client.BaseAddress = new Uri("https://api.toka.com.mx/candidato/");
             });
 
+            services.AddScoped<Authentication>();
             services.AddHttpClient<IRestConector, RestConector>();
             services.AddMvc().AddFluentValidation();
             services.AddTransient<IValidator<LogIn>, LogInValidator>();

@@ -47,7 +47,7 @@ namespace TokaFront.Controllers
             try
             {
                 User r = new User();
-                r = await _restConector.PostAsync<User, LogIn>(AppSettings.Current.ServiceUrl, $"api/Authentications", m, new Dictionary<string, string> { { "Authorization", GetTokenValue("Token") } });
+                r = await _restConector.PostAsync<User, LogIn>(AppSettings.Current.ServiceUrl, $"api/Authentications", m);
                 _httpContextAccessor.HttpContext.Response.Cookies.Append("toka-token-app",
                 r.Token.ToString(), new CookieOptions()
                 {
@@ -56,7 +56,7 @@ namespace TokaFront.Controllers
                 });
                 return RedirectToAction("Index", "PersonaFisica");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return RedirectToAction("Index");
 
@@ -66,7 +66,7 @@ namespace TokaFront.Controllers
         }
 
         [HttpGet]
-        [Authentication]
+        [ServiceFilter(typeof(Authentication))]
         public async Task<IActionResult> LogOutAsync()
         {
             try
