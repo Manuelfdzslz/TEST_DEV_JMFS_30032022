@@ -19,12 +19,10 @@ namespace TokaApi.Controllers
     [TkAuth]
     public class PersonasFisicaController : ControllerBase
     {
-        private readonly TokaContext _context;
         private IPersonaFisca _personaFisica;
 
         public PersonasFisicaController(TokaContext context,IPersonaFisca personaFisca)
         {
-            _context = context;
             _personaFisica = personaFisca;
         }
 
@@ -68,15 +66,7 @@ namespace TokaApi.Controllers
                 {
                     return NotFound();
                 }
-                if (!ModelState.IsValid)
-                {
-                    string errors = "";
-                    foreach (var error in ModelState.Values)
-                    {
-                        errors += String.Concat(",", error.Errors.Select(x => x.ErrorMessage).ToArray());
-                    }
-                    return Problem(errors);
-                }
+               
                 var res = await _personaFisica.PutAsync(personasFisica);
 
                 return Ok(res);

@@ -11,10 +11,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using TokaFront.Attributes;
 using TokaFront.Models;
 
 namespace TokaFront.Controllers
 {
+    [ServiceFilter(typeof(Authentication))]
     public class ReportsController : Controller
     {
         protected readonly IHttpClientFactory _httpClientFactory;
