@@ -10,7 +10,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using TokaFront.Interfaces;
 using TokaFront.Models;
+using TokaFront.Rest;
 
 namespace TokaFront.Attributes
 {
@@ -19,12 +21,13 @@ namespace TokaFront.Attributes
         private string _controller;
         private string _action;
         private static HttpClient client;
+        private readonly IRestConector _restConector;
 
-        public Authentication()
+        public Authentication(IRestConector restConector)
         {
             client = new HttpClient();
             client.BaseAddress = new Uri(AppSettings.Current.ServiceUrl);
-            
+            _restConector = restConector;
 
         }
 
@@ -38,25 +41,17 @@ namespace TokaFront.Attributes
             string token = context.HttpContext.Request.Cookies["toka-token-app"];
             if (!string.IsNullOrEmpty(token))
             {
+
                 try
                 {
-                    
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(token);
-                    var resp = client.GetAsync($"api/Authentications/token");
-                    HttpResponseMessage response = resp.Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var res = response.Content.ReadAsStringAsync().Result;
-                        isValid = JsonConvert.DeserializeObject<bool>(res);
-
-                    } 
-
+                    isValid =  _restConector.GetAsync<bool>(AppSettings.Current.ServiceUrl, $"api/Authentications/token", new Dictionary<string, string> { { "Authorization", token } }).Result;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
+
                 }
+
+
             }
 
             if (!isValid)

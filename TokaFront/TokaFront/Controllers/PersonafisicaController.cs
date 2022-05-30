@@ -10,36 +10,35 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using TokaFront.Attributes;
+using TokaFront.Interfaces;
 using TokaFront.Models;
 
 namespace TokaFront.Controllers
 {
-    [Authentication]
+    //[Authentication]
+    [ServiceFilter(typeof(Authentication))]
     public class PersonafisicaController : ParentController
     {
-        protected readonly IHttpClientFactory _httpClientFactory;
+        protected readonly IRestConector _restConector;
 
-        public PersonafisicaController(IHttpClientFactory httpClientFactory)
+        public PersonafisicaController( IRestConector restConector)
         {
-            _httpClientFactory = httpClientFactory;
+            _restConector = restConector;
         }
         // GET: PersonafisicaController
         public async Task<ActionResult> IndexAsync()
         {
+            
             List<PersonasFisica> r = new List<PersonasFisica>();
-            var client = _httpClientFactory.CreateClient("Api");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(GetTokenValue("Token"));
-            var resp = client.GetAsync($"api/PersonasFisica");
-            HttpResponseMessage response = resp.Result;
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var res = await response.Content.ReadAsStringAsync();
-                r = JsonConvert.DeserializeObject<List<PersonasFisica>>(res);
+               r=await _restConector.GetAsync<List<PersonasFisica>>(AppSettings.Current.ServiceUrl, $"api/PersonasFisica", new Dictionary<string, string> { { "Authorization", GetTokenValue("Token") } });
+            }
+            catch (Exception)
+            {
 
             }
-            
+         
             return View(r);
         }
 
@@ -47,22 +46,18 @@ namespace TokaFront.Controllers
         public async Task<ActionResult> DetailsAsync(int id)
         {
             PersonasFisica r = new PersonasFisica();
-            var client = _httpClientFactory.CreateClient("Api");
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(GetTokenValue("Token"));
-            var resp = client.GetAsync($"api/PersonasFisica/"+id);
-            HttpResponseMessage response = resp.Result;
-            if (response.IsSuccessStatusCode)
+
+            try
             {
-                var res = await response.Content.ReadAsStringAsync();
-                r = JsonConvert.DeserializeObject<PersonasFisica>(res);
-               return Json(new { IsSuccess = true, r });
+                r = await _restConector.GetAsync<PersonasFisica>(AppSettings.Current.ServiceUrl, $"api/PersonasFisica/{id}", new Dictionary<string, string> { { "Authorization", GetTokenValue("Token") } });
+                return Json(new { IsSuccess = true, r });
+            }
+            catch (Exception ex)
+            {
+                var apiRes = JsonConvert.DeserializeObject<ApiResponse>(ex.Message);
+                return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message});
 
             }
-            return Json(new { IsSuccess = false, Message = "Not found" });
-
-
 
         }
 
@@ -72,72 +67,72 @@ namespace TokaFront.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateAsync(PersonasFisica m)
         {
+
+            if (!ModelState.IsValid)
+            {
+                var lErrors = ModelState.Values.Where(v => v.Errors.Count > 0)
+                       .SelectMany(v => v.Errors)
+                       .Select(v => v.ErrorMessage)
+                       .ToArray();
+
+                string errors = "";
+                
+                errors = String.Join(",", lErrors);
+
+                return Json(new { IsSuccess = false, Message = errors });
+            }
+
+            m.UsuarioAgrega = int.Parse(GetTokenValue("UserId"));
+            ApiResponse r = new ApiResponse();
             try
             {
-                m.UsuarioAgrega = int.Parse(GetTokenValue("UserId"));
-                PersonasFisica r = new PersonasFisica();
-                var client = _httpClientFactory.CreateClient("Api");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(GetTokenValue("Token"));
-                StringContent content = new StringContent(JsonConvert.SerializeObject(m), Encoding.UTF8, "application/json");
-                var resp = client.PostAsync($"api/PersonasFisica", content);
-                HttpResponseMessage response = resp.Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    var apiRes = JsonConvert.DeserializeObject<ApiResponse>(res);
-                    return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
-                }
-                else
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                   var errorResponse = JsonConvert.DeserializeObject<ApiResponse>(res);
-                    return Json(new { IsSuccess = false, Message =string.Join(",", errorResponse.Errors.ToArray()) });
-                }
-                
-            } 
-            catch(Exception ex)
-            {
-                return Json(new { IsSuccess = false, Message=ex.Message });
+                r = await _restConector.PostAsync<ApiResponse, PersonasFisica>(AppSettings.Current.ServiceUrl, $"api/PersonasFisica/", m, new Dictionary<string, string> { { "Authorization", GetTokenValue("Token") } });
+                return Json(new { IsSuccess = r.IsSuccess, Message = r.Message });
             }
+            catch (Exception ex)
+            {
+                var apiRes = JsonConvert.DeserializeObject<ApiResponse>(ex.Message);
+                return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
+
+            }
+
         }
 
-       
+
         // POST: PersonafisicaController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> UpdateAsync(PersonasFisica m)
         {
+            if (!ModelState.IsValid)
+            {
+                var lErrors = ModelState.Values.Where(v => v.Errors.Count > 0)
+                       .SelectMany(v => v.Errors)
+                       .Select(v => v.ErrorMessage)
+                       .ToArray();
+
+                string errors = "";
+
+                errors = String.Join(",", lErrors);
+
+                return Json(new { IsSuccess = false, Message = errors });
+            }
+
+            m.UsuarioAgrega = int.Parse(GetTokenValue("UserId"));
+            ApiResponse r = new ApiResponse();
             try
             {
-                m.UsuarioAgrega = int.Parse(GetTokenValue("UserId"));
-                PersonasFisica r = new PersonasFisica();
-                var client = _httpClientFactory.CreateClient("Api");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(GetTokenValue("Token"));
-                StringContent content = new StringContent(JsonConvert.SerializeObject(m), Encoding.UTF8, "application/json");
-                var resp = client.PutAsync($"api/PersonasFisica/"+m.IdPersonaFisica, content);
-                HttpResponseMessage response = resp.Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    var apiRes = JsonConvert.DeserializeObject<ApiResponse>(res);
-                    return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
-                }
-                else
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    var errorResponse = JsonConvert.DeserializeObject<ApiResponse>(res);
-                    return Json(new { IsSuccess = false, Message = string.Join(",", errorResponse.Errors.ToArray()) });
-                }
-
+                r = await _restConector.PutAsync<ApiResponse, PersonasFisica>(AppSettings.Current.ServiceUrl, $"api/PersonasFisica/{m.IdPersonaFisica}", m, new Dictionary<string, string> { { "Authorization", GetTokenValue("Token") } });
+                return Json(new { IsSuccess = r.IsSuccess, Message = r.Message });
             }
             catch (Exception ex)
             {
-                return Json(new { IsSuccess = false, Message = ex.Message });
+                var apiRes = JsonConvert.DeserializeObject<ApiResponse>(ex.Message);
+                return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
+
             }
+
+
         }
 
         
@@ -147,32 +142,17 @@ namespace TokaFront.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteAsync(int id)
         {
+            ApiResponse r = new ApiResponse();
             try
             {
-                PersonasFisica r = new PersonasFisica();
-                var client = _httpClientFactory.CreateClient("Api");
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(GetTokenValue("Token"));
-                var resp = client.DeleteAsync($"api/PersonasFisica/" + id);
-                HttpResponseMessage response = resp.Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    var apiRes = JsonConvert.DeserializeObject<ApiResponse>(res);
-                    return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
-                }
-                else
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                   var errorResponse = JsonConvert.DeserializeObject<ApiResponse>(res);
-                    return Json(new { IsSuccess = false, Message = string.Join(",", errorResponse.Errors.ToArray()) });
-                }
-
+                r = await _restConector.DeleteAsync<ApiResponse>(AppSettings.Current.ServiceUrl, $"api/PersonasFisica/{id}", new Dictionary<string, string> { { "Authorization", GetTokenValue("Token") } });
+                return Json(new { IsSuccess = r.IsSuccess, Message = r.Message });
             }
             catch (Exception ex)
             {
-                return Json(new { IsSuccess = false, Message = ex.Message });
+                var apiRes = JsonConvert.DeserializeObject<ApiResponse>(ex.Message);
+                return Json(new { IsSuccess = apiRes.IsSuccess, Message = apiRes.Message });
+
             }
         }
     }

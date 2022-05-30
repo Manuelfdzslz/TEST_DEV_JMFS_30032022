@@ -11,7 +11,7 @@ using TokaFront.Models;
 
 namespace TokaFront.Controllers
 {
-    [Authentication]
+    [ServiceFilter(typeof(Authentication))]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
