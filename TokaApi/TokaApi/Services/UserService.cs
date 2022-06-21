@@ -32,7 +32,11 @@ namespace TokaApi.Services
             foreach (var dbuser in dbUsers)
             {
                 var user = _mapper.Map<User>(dbuser);
-                user.Info = _mapper.Map<UserInfo>(dbuser.Tb_UserInfos.First());
+                if (dbuser.Tb_UserInfos.Any())
+                {
+                    user.Info = _mapper.Map<UserInfo>(dbuser.Tb_UserInfos.First());
+                }
+               
                 users.Add(user);
             }
            
